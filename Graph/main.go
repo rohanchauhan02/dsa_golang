@@ -28,11 +28,33 @@ func (g *Graph) AddVertex(k int) {
 
 func (g *Graph) AddEdge(from, to int) {
 	//get vertex
+	fromVertex := g.getVertex(from)
+	toVertex := g.getVertex(to)
 	//check error
+	if fromVertex == nil || toVertex ==nil {
+		err:= fmt.Errorf("Invalid edge (%v-->%v)",from, to)
+		fmt.Println(err.Error())
+		return
+	}
+	if contains(fromVertex.adjacent,to) ||  contains(toVertex.adjacent,from){
+		err:= fmt.Errorf("Edge already present (%v-->%v)",from, to)
+		fmt.Println(err.Error())
+		return
+	}
 	//add edge
+	fromVertex.adjacent = append(fromVertex.adjacent, toVertex)
+	toVertex.adjacent = append(toVertex.adjacent, fromVertex)
 }
 
-//getVertex
+// getVertex
+func (g *Graph) getVertex(k int) *Vertex {
+	for i, v := range g.vertices {
+		if v.key == k {
+			return g.vertices[i]
+		}
+	}
+	return nil
+}
 
 //contains
 
@@ -52,7 +74,7 @@ func (g *Graph) PrintGraph() {
 	for _, v := range g.vertices {
 		fmt.Printf("\nVertex %v: ", v.key)
 		for _, i := range v.adjacent {
-			fmt.Printf("%v: ", i.key)
+			fmt.Printf("%v ", i.key)
 		}
 	}
 	fmt.Println()
@@ -67,5 +89,9 @@ func main() {
 	test.AddVertex(5)
 	test.AddVertex(0)
 	test.AddVertex(5)
+	test.AddEdge(1, 2)
+	test.AddEdge(6, 2)
+	test.AddEdge(3, 2)
+	test.AddEdge(1, 2)
 	test.PrintGraph()
 }
